@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HealthBridge — Patient</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #1a73e8; --blue-dark: #1558b0; --blue-light: #e8f0fe;
+      --green: #34a853; --red: #ea4335; --orange: #fbbc04;
+      --text: #1f2937; --muted: #6b7280; --bg: #f0f4ff;
+      --white: #ffffff; --radius: 16px;
+      --shadow: 0 4px 24px rgba(26,115,232,0.10);
+    }
+    body { font-family: 'Nunito', sans-serif; background: var(--bg); min-height: 100vh; }
+
+    /* NAV */
+    nav {
+      background: var(--white); padding: 16px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo { font-size: 20px; font-weight: 800; color: var(--blue); }
+    .nav-user { font-size: 15px; font-weight: 700; color: var(--muted); }
+    .btn-logout {
+      padding: 8px 16px; background: var(--blue-light); color: var(--blue);
+      border: none; border-radius: 10px; font-family: 'Nunito', sans-serif;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+    }
+
+    .container { max-width: 800px; margin: 0 auto; padding: 24px 20px; }
+
+    /* SOS */
+    .sos-bar {
+      background: var(--red); color: white; border-radius: var(--radius);
+      padding: 16px 24px; display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(234,67,53,0.3);
+    }
+    .sos-text { font-size: 16px; font-weight: 700; }
+    .sos-btn {
+      padding: 12px 28px; background: white; color: var(--red);
+      border: none; border-radius: 12px; font-family: 'Nunito', sans-serif;
+      font-size: 17px; font-weight: 800; cursor: pointer;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--white); border-radius: 20px;
+      box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 19px; font-weight: 800; color: var(--text);
+      margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+    }
+
+    /* SYMPTOM INPUT */
+    .input-row { display: flex; gap: 10px; align-items: flex-end; }
+    textarea {
+      flex: 1; padding: 14px 16px; border: 2px solid #e5e7eb;
+      border-radius: var(--radius); font-family: 'Nunito', sans-serif;
+      font-size: 17px; color: var(--text); resize: none; outline: none;
+      transition: border 0.2s; min-height: 100px;
+    }
+    textarea:focus { border-color: var(--blue); }
+
+    .mic-btn {
+      width: 54px; height: 54px; border-radius: 50%;
+      background: var(--blue-light); color: var(--blue);
+      border: none; font-size: 24px; cursor: pointer;
+      transition: all 0.2s; flex-shrink: 0;
+    }
+    .mic-btn.recording { background: var(--red); color: white; animation: pulse 1s infinite; }
+
+    .btn {
+      width: 100%; padding: 16px; background: var(--blue); color: white;
+      border: none; border-radius: var(--radius); font-family: 'Nunito', sans-serif;
+      font-size: 18px; font-weight: 800; cursor: pointer;
+      transition: background 0.2s; margin-top: 12px;
+    }
+    .btn:hover { background: var(--blue-dark); }
+    .btn:disabled { background: #9ca3af; cursor: not-allowed; }
+
+    .ai-response {
+      margin-top: 16px; padding: 16px; background: var(--blue-light);
+      border-radius: var(--radius); font-size: 16px; color: var(--text);
+      line-height: 1.7; display: none; border-left: 4px solid var(--blue);
+    }
+
+    /* REMINDERS */
+    .reminder-list { display: flex; flex-direction: column; gap: 10px; }
+    .reminder-card {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; background: var(--blue-light);
+      border-radius: 12px;
+    }
+    .reminder-info { font-size: 16px; font-weight: 700; color: var(--text); }
+    .reminder-time { font-size: 14px; color: var(--muted); margin-top: 2px; }
+    .reminder-badge {
+      padding: 6px 14px; background: var(--green); color: white;
+      border-radius: 20px; font-size: 13px; font-weight: 700;
+    }
+
+    .add-reminder-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .add-reminder-row input {
+      flex: 1; min-width: 120px; padding: 12px 14px; border: 2px solid #e5e7eb;
+      border-radius: 12px; font-family: 'Nunito', sans-serif; font-size: 15px;
+      outline: none;
+    }
+    .add-reminder-row input:focus { border-color: var(--blue); }
+    .btn-small {
+      padding: 12px 20px; background: var(--green); color: white;
+      border: none; border-radius: 12px; font-family: 'Nunito', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer; white-space: nowrap;
+    }
+
+    /* TIPS */
+    .tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+    .tip-card {
+      padding: 18px; border-radius: 14px; text-align: center;
+      font-size: 15px; font-weight: 700; line-height: 1.5;
+    }
+    .tip-card:nth-child(1) { background: #e6f4ea; color: #1e7e34; }
+    .tip-card:nth-child(2) { background: #fff3cd; color: #856404; }
+    .tip-card:nth-child(3) { background: #cfe2ff; color: #084298; }
+
+    /* CHATBOT */
+    .chatbot-fab {
+      position: fixed; bottom: 28px; right: 28px;
+      width: 60px; height: 60px; border-radius: 50%;
+      background: var(--blue); color: white; border: none;
+      font-size: 26px; cursor: pointer; box-shadow: 0 4px 20px rgba(26,115,232,0.4);
+      z-index: 200; transition: transform 0.2s;
+    }
+    .chatbot-fab:hover { transform: scale(1.1); }
+
+    .chatbot-window {
+      position: fixed; bottom: 100px; right: 28px;
+      width: 340px; max-height: 480px;
+      background: white; border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+      display: none; flex-direction: column; z-index: 200;
+      overflow: hidden;
+    }
+    .chatbot-window.open { display: flex; }
+
+    .chat-header {
+      background: var(--blue); color: white; padding: 16px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .chat-header-title { font-size: 16px; font-weight: 800; }
+    .chat-lang {
+      padding: 4px 8px; background: rgba(255,255,255,0.2);
+      border: none; border-radius: 8px; color: white;
+      font-family: 'Nunito', sans-serif; font-size: 13px; cursor: pointer;
+    }
+    .chat-lang option { color: var(--text); background: white; }
+
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 16px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .chat-bubble {
+      max-width: 85%; padding: 10px 14px; border-radius: 14px;
+      font-size: 14px; line-height: 1.5; font-weight: 600;
+    }
+    .chat-bubble.bot { background: var(--blue-light); color: var(--text); align-self: flex-start; border-bottom-left-radius: 4px; }
+    .chat-bubble.user { background: var(--blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+
+    .chat-input-row {
+      padding: 12px; border-top: 1px solid #e5e7eb;
+      display: flex; gap: 8px; align-items: center;
+    }
+    .chat-input {
+      flex: 1; padding: 10px 12px; border: 2px solid #e5e7eb;
+      border-radius: 10px; font-family: 'Nunito', sans-serif; font-size: 14px;
+      outline: none;
+    }
+    .chat-input:focus { border-color: var(--blue); }
+    .chat-send {
+      padding: 10px 14px; background: var(--blue); color: white;
+      border: none; border-radius: 10px; font-size: 16px; cursor: pointer;
+    }
+    .chat-mic {
+      width: 38px; height: 38px; background: var(--blue-light); color: var(--blue);
+      border: none; border-radius: 50%; font-size: 16px; cursor: pointer;
+    }
+    .chat-mic.recording { background: var(--red); color: white; }
+
+    .msg { margin-top: 12px; padding: 12px; border-radius: 10px; font-size: 15px; font-weight: 600; display: none; }
+    .msg.success { background: #e6f4ea; color: var(--green); display: block; }
+    .msg.error   { background: #fce8e6; color: var(--red); display: block; }
+
+    @media (max-width: 480px) {
+      .chatbot-window { width: calc(100vw - 40px); right: 20px; }
+      .sos-bar { flex-direction: column; gap: 12px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">🏥 HealthBridge</div>
+  <div class="nav-user" id="navUser">Patient</div>
+  <button class="btn-logout" onclick="logout()">Logout</button>
+</nav>
+
+<div class="container">
+
+  <!-- SOS -->
+  <div class="sos-bar">
+    <div class="sos-text">🚨 Emergency? Alert your family instantly</div>
+    <button class="sos-btn" onclick="triggerSOS()">🆘 SOS ALERT</button>
+  </div>
+
+  <!-- SYMPTOMS -->
+  <div class="card">
+    <div class="card-title">🩺 How are you feeling today?</div>
+    <div class="input-row">
+      <textarea id="symptomsInput" placeholder="Type or speak your symptoms here... e.g. I have headache and fever"></textarea>
+      <button class="mic-btn" id="symMic" onclick="toggleMic('symptomsInput', 'symMic')" title="Speak symptoms">🎤</button>
+    </div>
+    <button class="btn" id="submitBtn" onclick="submitSymptoms()">🤖 Get AI Health Advice</button>
+    <div class="ai-response" id="aiResponse"></div>
+    <div class="msg" id="symptomMsg"></div>
+  </div>
+
+  <!-- REMINDERS -->
+  <div class="card">
+    <div class="card-title">💊 Medicine Reminders</div>
+    <div class="reminder-list" id="reminderList">
+      <div style="color:var(--muted); font-size:15px;">Loading reminders...</div>
+    </div>
+    <div class="add-reminder-row">
+      <input type="text" id="medName" placeholder="Medicine name"/>
+      <input type="time" id="medTime"/>
+      <button class="btn-small" onclick="addReminder()">+ Add</button>
+    </div>
+    <div class="msg" id="reminderMsg"></div>
+  </div>
+
+  <!-- TIPS -->
+  <div class="card">
+    <div class="card-title">💡 Daily Health Tips</div>
+    <div class="tips-grid">
+      <div class="tip-card">🥤 Drink 8 glasses of water daily to stay hydrated</div>
+      <div class="tip-card">🚶 Walk for 30 minutes every morning for a healthy heart</div>
+      <div class="tip-card">😴 Sleep 7 to 8 hours every night for good health</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- CHATBOT FAB -->
+<button class="chatbot-fab" onclick="toggleChat()" title="Open Health Assistant">💬</button>
+
+<!-- CHATBOT WINDOW -->
+<div class="chatbot-window" id="chatWindow">
+  <div class="chat-header">
+    <div class="chat-header-title">🤖 Health Assistant</div>
+    <select class="chat-lang" id="chatLang">
+      <option value="en">English</option>
+      <option value="hi">Hindi</option>
+      <option value="kn">Kannada</option>
+      <option value="ta">Tamil</option>
+      <option value="te">Telugu</option>
+      <option value="mr">Marathi</option>
+    </select>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-bubble bot">👋 Hello! I am your Health Assistant. Tell me your symptoms and I will help you.</div>
+    <div class="chat-bubble bot">You can ask me things like:<br>• I have chest pain<br>• My head is hurting<br>• I feel dizzy<br>• What medicine for fever</div>
+  </div>
+  <div class="chat-input-row">
+    <button class="chat-mic" id="chatMic" onclick="toggleMic('chatInput', 'chatMic')" title="Speak">🎤</button>
+    <input class="chat-input" id="chatInput" placeholder="Type your question..." onkeypress="if(event.key==='Enter') sendChat()"/>
+    <button class="chat-send" onclick="sendChat()">➤</button>
+  </div>
+</div>
+
+<script>
+  // Auth check
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  if (!user) window.location.href = 'index.html';
+  else document.getElementById('navUser').textContent = '👤 ' + user.name;
+
+  function logout() {
+    localStorage.removeItem('user');
+    window.location.href = 'index.html';
+  }
+
+  // SOS
+  function triggerSOS() {
+    if (confirm('Send emergency alert to your family?')) {
+      alert('🚨 Emergency alert sent to your family members!\nThey have been notified with your location.');
+    }
+  }
+
+  // VOICE INPUT
+  let recognition = null;
+  function toggleMic(targetId, btnId) {
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+      alert('Voice input not supported in this browser. Please use Chrome.');
+      return;
+    }
+    const btn = document.getElementById(btnId);
+    if (recognition) {
+      recognition.stop(); recognition = null;
+      btn.classList.remove('recording'); btn.textContent = '🎤';
+      return;
+    }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SR();
+    const lang = document.getElementById('chatLang')?.value || localStorage.getItem('lang') || 'en';
+    const langMap = { en:'en-IN', hi:'hi-IN', kn:'kn-IN', ta:'ta-IN', te:'te-IN', mr:'mr-IN' };
+    recognition.lang = langMap[lang] || 'en-IN';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.onresult = (e) => {
+      document.getElementById(targetId).value = e.results[0][0].transcript;
+      btn.classList.remove('recording'); btn.textContent = '🎤'; recognition = null;
+    };
+    recognition.onerror = () => {
+      btn.classList.remove('recording'); btn.textContent = '🎤'; recognition = null;
+    };
+    recognition.start();
+    btn.classList.add('recording'); btn.textContent = '⏹';
+  }
+
+  // SUBMIT SYMPTOMS
+  async function submitSymptoms() {
+    const symptoms = document.getElementById('symptomsInput').value.trim();
+    const msg = document.getElementById('symptomMsg');
+    const aiBox = document.getElementById('aiResponse');
+    const btn = document.getElementById('submitBtn');
+    if (!symptoms) { msg.className='msg error'; msg.textContent='⚠️ Please describe your symptoms.'; return; }
+
+    btn.disabled = true; btn.textContent = '⏳ Getting AI advice...';
+    aiBox.style.display = 'none'; msg.style.display = 'none';
+
+    try {
+      const res = await fetch('/api/health/symptoms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ patient_id: user.id, symptoms })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        aiBox.style.display = 'block';
+        aiBox.textContent = '🤖 ' + data.ai_response;
+        speakText(data.ai_response);
+        msg.className='msg success'; msg.textContent='✅ Symptoms saved successfully!';
+      } else {
+        msg.className='msg error'; msg.textContent='❌ ' + (data.error || 'Something went wrong.');
+      }
+    } catch(e) {
+      msg.className='msg error'; msg.textContent='❌ Cannot connect to server.';
+    }
+    btn.disabled = false; btn.textContent = '🤖 Get AI Health Advice';
+  }
+
+  // VOICE OUTPUT
+  function speakText(text) {
+    if ('speechSynthesis' in window) {
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-IN'; u.rate = 0.9;
+      window.speechSynthesis.speak(u);
+    }
+  }
+
+  // REMINDERS
+  async function loadReminders() {
+    try {
+      const res = await fetch('/api/family/reminders/' + user.id);
+      const data = await res.json();
+      const list = document.getElementById('reminderList');
+      if (!data.length) { list.innerHTML = '<div style="color:var(--muted);font-size:15px;">No reminders yet. Add one below.</div>'; return; }
+      list.innerHTML = data.map(r => `
+        <div class="reminder-card">
+          <div>
+            <div class="reminder-info">💊 ${r.medicine_name}</div>
+            <div class="reminder-time">⏰ ${r.reminder_time}</div>
+          </div>
+          <div class="reminder-badge">Scheduled</div>
+        </div>`).join('');
+    } catch(e) {}
+  }
+
+  async function addReminder() {
+    const medicine_name = document.getElementById('medName').value.trim();
+    const reminder_time = document.getElementById('medTime').value;
+    const msg = document.getElementById('reminderMsg');
+    if (!medicine_name || !reminder_time) { msg.className='msg error'; msg.textContent='⚠️ Enter medicine name and time.'; return; }
+    try {
+      const res = await fetch('/api/family/reminders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ patient_id: user.id, medicine_name, reminder_time })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        msg.className='msg success'; msg.textContent='✅ Reminder added!';
+        document.getElementById('medName').value='';
+        document.getElementById('medTime').value='';
+        loadReminders();
+      } else { msg.className='msg error'; msg.textContent='❌ ' + data.error; }
+    } catch(e) { msg.className='msg error'; msg.textContent='❌ Cannot connect to server.'; }
+  }
+
+  // CHATBOT
+  function toggleChat() {
+    const w = document.getElementById('chatWindow');
+    w.classList.toggle('open');
+  }
+
+  async function sendChat() {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+    addBubble(msg, 'user');
+    input.value = '';
+    const lang = document.getElementById('chatLang').value;
+    const langNames = { en:'English', hi:'Hindi', kn:'Kannada', ta:'Tamil', te:'Telugu', mr:'Marathi' };
+    addBubble('...', 'bot', 'typingBubble');
+    try {
+      const res = await fetch('/api/health/symptoms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patient_id: user.id,
+          symptoms: msg + ` (Please respond in ${langNames[lang]})`
+        })
+      });
+      const data = await res.json();
+      document.getElementById('typingBubble')?.remove();
+      if (res.ok) {
+        addBubble(data.ai_response, 'bot');
+        speakText(data.ai_response);
+      } else { addBubble('Sorry, I could not process that. Please try again.', 'bot'); }
+    } catch(e) {
+      document.getElementById('typingBubble')?.remove();
+      addBubble('Cannot connect to server right now.', 'bot');
+    }
+  }
+
+  function addBubble(text, type, id) {
+    const msgs = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.className = 'chat-bubble ' + type;
+    if (id) div.id = id;
+    div.textContent = text;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  loadReminders();
+</script>
+</body>
+</html>

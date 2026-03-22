@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HealthBridge — Family</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #1a73e8; --blue-dark: #1558b0; --blue-light: #e8f0fe;
+      --green: #34a853; --red: #ea4335; --orange: #fbbc04;
+      --text: #1f2937; --muted: #6b7280; --bg: #f0f4ff;
+      --white: #ffffff; --radius: 16px;
+      --shadow: 0 4px 24px rgba(26,115,232,0.10);
+    }
+    body { font-family: 'Nunito', sans-serif; background: var(--bg); min-height: 100vh; }
+
+    nav {
+      background: var(--white); padding: 16px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo { font-size: 20px; font-weight: 800; color: var(--blue); }
+    .nav-user  { font-size: 15px; font-weight: 700; color: var(--muted); }
+    .btn-logout {
+      padding: 8px 16px; background: var(--blue-light); color: var(--blue);
+      border: none; border-radius: 10px; font-family: 'Nunito', sans-serif;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+    }
+
+    .container { max-width: 860px; margin: 0 auto; padding: 24px 20px; }
+
+    .welcome-banner {
+      background: linear-gradient(135deg, var(--blue), var(--blue-dark));
+      color: white; border-radius: 20px; padding: 24px 28px;
+      margin-bottom: 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .welcome-title { font-size: 20px; font-weight: 800; }
+    .welcome-sub   { font-size: 14px; opacity: 0.85; margin-top: 4px; }
+    .patient-badge {
+      background: rgba(255,255,255,0.2); padding: 10px 18px;
+      border-radius: 12px; font-size: 14px; font-weight: 700; text-align: center;
+    }
+
+    .card {
+      background: var(--white); border-radius: 20px;
+      box-shadow: var(--shadow); padding: 28px; margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 19px; font-weight: 800; color: var(--text);
+      margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+    }
+
+    /* TABLE */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    th {
+      background: var(--blue-light); color: var(--blue);
+      padding: 12px 16px; text-align: left; font-weight: 800; font-size: 14px;
+    }
+    th:first-child { border-radius: 10px 0 0 10px; }
+    th:last-child  { border-radius: 0 10px 10px 0; }
+    td { padding: 14px 16px; border-bottom: 1px solid #f3f4f6; color: var(--text); font-weight: 600; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafafa; }
+    .ai-cell { max-width: 320px; font-size: 14px; color: var(--muted); line-height: 1.5; }
+    .date-cell { white-space: nowrap; font-size: 13px; color: var(--muted); }
+
+    /* REMINDER CARDS */
+    .reminder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+    .reminder-card {
+      padding: 16px 18px; background: var(--blue-light);
+      border-radius: 14px; display: flex; align-items: center; gap: 14px;
+    }
+    .reminder-icon { font-size: 28px; }
+    .reminder-name { font-size: 16px; font-weight: 700; color: var(--text); }
+    .reminder-time { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+    /* ADD REMINDER */
+    .add-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .add-row input, .add-row select {
+      flex: 1; min-width: 120px; padding: 12px 14px;
+      border: 2px solid #e5e7eb; border-radius: 12px;
+      font-family: 'Nunito', sans-serif; font-size: 15px; outline: none;
+    }
+    .add-row input:focus, .add-row select:focus { border-color: var(--blue); }
+    .btn-small {
+      padding: 12px 20px; background: var(--blue); color: white;
+      border: none; border-radius: 12px; font-family: 'Nunito', sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer; white-space: nowrap;
+    }
+    .btn-small:hover { background: var(--blue-dark); }
+
+    /* PATIENT ID INPUT */
+    .pid-bar {
+      background: var(--white); border-radius: 16px;
+      box-shadow: var(--shadow); padding: 20px 24px;
+      margin-bottom: 24px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    }
+    .pid-bar label { font-size: 15px; font-weight: 700; color: var(--text); white-space: nowrap; }
+    .pid-bar input {
+      flex: 1; min-width: 140px; padding: 12px 14px;
+      border: 2px solid #e5e7eb; border-radius: 12px;
+      font-family: 'Nunito', sans-serif; font-size: 16px; outline: none;
+    }
+    .pid-bar input:focus { border-color: var(--blue); }
+
+    .empty-state { text-align: center; padding: 32px; color: var(--muted); font-size: 15px; font-weight: 600; }
+
+    .msg { margin-top: 12px; padding: 12px; border-radius: 10px; font-size: 15px; font-weight: 600; display: none; }
+    .msg.success { background: #e6f4ea; color: var(--green); display: block; }
+    .msg.error   { background: #fce8e6; color: var(--red); display: block; }
+
+    @media (max-width: 600px) {
+      .welcome-banner { flex-direction: column; gap: 14px; }
+      .patient-badge { align-self: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">🏥 HealthBridge</div>
+  <div class="nav-user" id="navUser">Family</div>
+  <button class="btn-logout" onclick="logout()">Logout</button>
+</nav>
+
+<div class="container">
+
+  <!-- WELCOME -->
+  <div class="welcome-banner">
+    <div>
+      <div class="welcome-title" id="welcomeName">Welcome, Family Member 👋</div>
+      <div class="welcome-sub">Monitor your patient's health in real time</div>
+    </div>
+    <div class="patient-badge">
+      <div style="font-size:11px;opacity:0.8;">MONITORING</div>
+      <div id="patientBadgeName">Patient</div>
+    </div>
+  </div>
+
+  <!-- PATIENT ID BAR -->
+  <div class="pid-bar">
+    <label>🔗 Enter Patient ID to monitor:</label>
+    <input type="number" id="patientIdInput" placeholder="e.g. 1"/>
+    <button class="btn-small" onclick="loadAll()">Load Data</button>
+  </div>
+
+  <!-- HEALTH LOGS -->
+  <div class="card">
+    <div class="card-title">📋 Patient Health Logs</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>📅 Date & Time</th>
+            <th>🩺 Symptoms</th>
+            <th>🤖 AI Advice</th>
+          </tr>
+        </thead>
+        <tbody id="logsBody">
+          <tr><td colspan="3"><div class="empty-state">Enter Patient ID above and click Load Data</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- REMINDERS -->
+  <div class="card">
+    <div class="card-title">💊 Medicine Reminders</div>
+    <div class="reminder-grid" id="reminderGrid">
+      <div class="empty-state">No reminders found. Add one below.</div>
+    </div>
+    <div class="add-row">
+      <input type="text" id="medName" placeholder="Medicine name"/>
+      <input type="time" id="medTime"/>
+      <button class="btn-small" onclick="addReminder()">+ Add Reminder</button>
+    </div>
+    <div class="msg" id="reminderMsg"></div>
+  </div>
+
+</div>
+
+<script>
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  if (!user) window.location.href = 'index.html';
+  else {
+    document.getElementById('navUser').textContent = '👤 ' + user.name;
+    document.getElementById('welcomeName').textContent = 'Welcome, ' + user.name + ' 👋';
+    if (user.patient_id) {
+      document.getElementById('patientIdInput').value = user.patient_id;
+      loadAll();
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('user');
+    window.location.href = 'index.html';
+  }
+
+  function getPatientId() {
+    return document.getElementById('patientIdInput').value.trim();
+  }
+
+  async function loadAll() {
+    const pid = getPatientId();
+    if (!pid) { alert('Please enter a Patient ID.'); return; }
+    await loadLogs(pid);
+    await loadReminders(pid);
+  }
+
+  async function loadLogs(pid) {
+    const tbody = document.getElementById('logsBody');
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;padding:20px;color:var(--muted);">Loading...</td></tr>';
+    try {
+      const res = await fetch('/api/family/logs/' + pid);
+      const data = await res.json();
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="3"><div class="empty-state">No health logs found for this patient yet.</div></td></tr>';
+        return;
+      }
+      document.getElementById('patientBadgeName').textContent = data[0].patient_name || 'Patient';
+      tbody.innerHTML = data.map(log => `
+        <tr>
+          <td class="date-cell">${new Date(log.created_at).toLocaleString('en-IN', {dateStyle:'medium', timeStyle:'short'})}</td>
+          <td style="font-weight:700;">${log.symptoms}</td>
+          <td class="ai-cell">${log.ai_response}</td>
+        </tr>`).join('');
+    } catch(e) {
+      tbody.innerHTML = '<tr><td colspan="3"><div class="empty-state" style="color:var(--red);">❌ Cannot connect to server.</div></td></tr>';
+    }
+  }
+
+  async function loadReminders(pid) {
+    const grid = document.getElementById('reminderGrid');
+    try {
+      const res = await fetch('/api/family/reminders/' + pid);
+      const data = await res.json();
+      if (!data.length) { grid.innerHTML = '<div class="empty-state">No reminders yet. Add one below.</div>'; return; }
+      grid.innerHTML = data.map(r => `
+        <div class="reminder-card">
+          <div class="reminder-icon">💊</div>
+          <div>
+            <div class="reminder-name">${r.medicine_name}</div>
+            <div class="reminder-time">⏰ ${r.reminder_time}</div>
+          </div>
+        </div>`).join('');
+    } catch(e) {}
+  }
+
+  async function addReminder() {
+    const pid = getPatientId();
+    const medicine_name = document.getElementById('medName').value.trim();
+    const reminder_time = document.getElementById('medTime').value;
+    const msg = document.getElementById('reminderMsg');
+    if (!pid) { msg.className='msg error'; msg.textContent='⚠️ Enter patient ID first.'; return; }
+    if (!medicine_name || !reminder_time) { msg.className='msg error'; msg.textContent='⚠️ Enter medicine name and time.'; return; }
+    try {
+      const res = await fetch('/api/family/reminders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ patient_id: parseInt(pid), medicine_name, reminder_time })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        msg.className='msg success'; msg.textContent='✅ Reminder added!';
+        document.getElementById('medName').value='';
+        document.getElementById('medTime').value='';
+        loadReminders(pid);
+      } else { msg.className='msg error'; msg.textContent='❌ ' + data.error; }
+    } catch(e) { msg.className='msg error'; msg.textContent='❌ Cannot connect to server.'; }
+  }
+</script>
+</body>
+</html>

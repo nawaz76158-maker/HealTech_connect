@@ -1,0 +1,19 @@
+# Secrets
+.env
+
+#logs
+logs
+*.log
+npm-debug.log*
+
+# dependencies ( too large to upload )
+node_modules/
+
+# OS GENERATED FILES
+.DS_Store
+Thumbs.db
+
+# API KEYS AND SECRETS 
+.env
+.env.local
+.env.sample

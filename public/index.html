@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HealthBridge — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue: #1a73e8;
+      --blue-dark: #1558b0;
+      --blue-light: #e8f0fe;
+      --green: #34a853;
+      --red: #ea4335;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --bg: #f0f4ff;
+      --white: #ffffff;
+      --radius: 16px;
+      --shadow: 0 4px 24px rgba(26,115,232,0.10);
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .logo-icon {
+      width: 48px; height: 48px;
+      background: var(--blue);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+
+    .logo-text { font-size: 22px; font-weight: 800; color: var(--blue); }
+    .logo-sub  { font-size: 13px; color: var(--muted); font-weight: 600; }
+
+    .toggle-bar {
+      display: flex;
+      background: var(--blue-light);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+
+    .toggle-btn {
+      flex: 1; padding: 12px;
+      border: none; background: transparent;
+      border-radius: 10px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px; font-weight: 700;
+      color: var(--muted); cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .toggle-btn.active {
+      background: var(--blue);
+      color: var(--white);
+      box-shadow: 0 2px 8px rgba(26,115,232,0.25);
+    }
+
+    .form-group { margin-bottom: 18px; }
+
+    label {
+      display: block;
+      font-size: 15px; font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: var(--radius);
+      font-family: 'Nunito', sans-serif;
+      font-size: 17px;
+      color: var(--text);
+      background: var(--white);
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    input:focus, select:focus { border-color: var(--blue); }
+
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--blue);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Nunito', sans-serif;
+      font-size: 18px; font-weight: 800;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 8px;
+    }
+
+    .btn:hover { background: var(--blue-dark); transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .msg {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 15px; font-weight: 600;
+      display: none;
+    }
+
+    .msg.success { background: #e6f4ea; color: var(--green); display: block; }
+    .msg.error   { background: #fce8e6; color: var(--red);   display: block; }
+
+    .form-section { display: none; }
+    .form-section.active { display: block; }
+
+    @media (max-width: 480px) {
+      .card { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">
+    <div class="logo-icon">🏥</div>
+    <div>
+      <div class="logo-text">HealthBridge</div>
+      <div class="logo-sub">Family Health Monitor</div>
+    </div>
+  </div>
+
+  <div class="toggle-bar">
+    <button class="toggle-btn active" onclick="showTab('login')">Login</button>
+    <button class="toggle-btn" onclick="showTab('register')">Register</button>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="form-section active" id="loginForm">
+    <div class="form-group">
+      <label>📧 Email Address</label>
+      <input type="email" id="loginEmail" placeholder="your@email.com"/>
+    </div>
+    <div class="form-group">
+      <label>🔒 Password</label>
+      <input type="password" id="loginPassword" placeholder="Enter password"/>
+    </div>
+    <button class="btn" onclick="loginUser()">Login →</button>
+    <div class="msg" id="loginMsg"></div>
+  </div>
+
+  <!-- REGISTER -->
+  <div class="form-section" id="registerForm">
+    <div class="form-group">
+      <label>👤 Full Name</label>
+      <input type="text" id="regName" placeholder="Your full name"/>
+    </div>
+    <div class="form-group">
+      <label>📧 Email Address</label>
+      <input type="email" id="regEmail" placeholder="your@email.com"/>
+    </div>
+    <div class="form-group">
+      <label>🔒 Password</label>
+      <input type="password" id="regPassword" placeholder="Create password"/>
+    </div>
+    <div class="form-group">
+      <label>👥 Role</label>
+      <select id="regRole">
+        <option value="patient">Patient (Elderly Person)</option>
+        <option value="family">Family Member</option>
+      </select>
+    </div>
+    <div class="form-group" id="patientIdGroup" style="display:none;">
+      <label>🔗 Patient ID (your patient's user ID)</label>
+      <input type="number" id="regPatientId" placeholder="Enter patient ID"/>
+    </div>
+    <div class="form-group">
+      <label>🌐 Preferred Language</label>
+      <select id="regLang">
+        <option value="en">English</option>
+        <option value="hi">Hindi</option>
+        <option value="kn">Kannada</option>
+        <option value="ta">Tamil</option>
+        <option value="te">Telugu</option>
+        <option value="mr">Marathi</option>
+      </select>
+    </div>
+    <button class="btn" onclick="registerUser()">Create Account →</button>
+    <div class="msg" id="registerMsg"></div>
+  </div>
+</div>
+
+<script>
+  function showTab(tab) {
+    document.getElementById('loginForm').classList.toggle('active', tab === 'login');
+    document.getElementById('registerForm').classList.toggle('active', tab === 'register');
+    document.querySelectorAll('.toggle-btn').forEach((b, i) => {
+      b.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
+    });
+  }
+
+  document.getElementById('regRole').addEventListener('change', function() {
+    document.getElementById('patientIdGroup').style.display =
+      this.value === 'family' ? 'block' : 'none';
+  });
+
+  async function registerUser() {
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const role = document.getElementById('regRole').value;
+    const lang = document.getElementById('regLang').value;
+    const patient_id = document.getElementById('regPatientId').value || null;
+    const msg = document.getElementById('registerMsg');
+
+    if (!name || !email || !password) {
+      msg.className = 'msg error'; msg.textContent = '⚠️ Please fill all fields.'; return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, role, patient_id })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        msg.className = 'msg success';
+        msg.textContent = '✅ ' + data.message + ' Your ID: ' + data.userId;
+        localStorage.setItem('lang', lang);
+      } else {
+        msg.className = 'msg error'; msg.textContent = '❌ ' + (data.error || data.message);
+      }
+    } catch (e) {
+      msg.className = 'msg error'; msg.textContent = '❌ Cannot connect to server.';
+    }
+  }
+
+  async function loginUser() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const msg = document.getElementById('loginMsg');
+
+    if (!email || !password) {
+      msg.className = 'msg error'; msg.textContent = '⚠️ Please fill all fields.'; return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+        msg.className = 'msg success'; msg.textContent = '✅ Login successful! Redirecting...';
+        setTimeout(() => {
+          window.location.href = data.user.role === 'patient' ? 'patient.html' : 'family.html';
+        }, 1000);
+      } else {
+        msg.className = 'msg error'; msg.textContent = '❌ ' + data.message;
+      }
+    } catch (e) {
+      msg.className = 'msg error'; msg.textContent = '❌ Cannot connect to server.';
+    }
+  }
+</script>
+</body>
+</html>
