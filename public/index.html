@@ -170,6 +170,15 @@
       <input type="password" id="loginPassword" placeholder="Enter password"/>
     </div>
     <button class="btn" onclick="loginUser()">Login →</button>
+    <button class="btn" onclick="guestPatient()" 
+style="background:#34a853; margin-top:10px;">
+  🏥 Try as Patient (Demo)
+</button>
+
+<button class="btn" onclick="guestFamily()" 
+style="background:#ff6b35; margin-top:10px;">
+  👨‍👩‍👧 Try as Family Member (Demo)
+</button>
     <div class="msg" id="loginMsg"></div>
   </div>
 
@@ -215,6 +224,27 @@
 </div>
 
 <script>
+
+  function guestPatient() {
+    localStorage.setItem('user', JSON.stringify({
+      id: 1,
+      name: 'Guest Patient',
+      role: 'patient',
+      email: 'guest@demo.com'
+    }));
+    window.location.href = 'patient.html';
+  }
+
+  function guestFamily() {
+    localStorage.setItem('user', JSON.stringify({
+      id: 2,
+      name: 'Guest Family',
+      role: 'family',
+      email: 'guest@demo.com'
+    }));
+    window.location.href = 'family.html';
+  }
+
   function showTab(tab) {
     document.getElementById('loginForm').classList.toggle('active', tab === 'login');
     document.getElementById('registerForm').classList.toggle('active', tab === 'register');
