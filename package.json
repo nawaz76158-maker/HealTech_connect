@@ -1,6 +1,7 @@
 {
   "name": "rakshith",
   "version": "1.0.0",
+  "description": "Problem Statement\r Many elderly patients and individuals face difficulties in:\r Managing medical records\r Booking appointments quickly\r Getting help during emergencies\r Keeping family members informed\r This project solves these issues by providing a connected healthcare ecosystem.\r 💡 Solution\r A centralized platform where:\r Patients can manage their health\r Doctors can treat patients digitally\r Hospitals can manage operations\r Family members can monitor patient health\r 👥 User Roles & Features\r 👤 Patient\r Create and manage account\r Book, reschedule, or cancel appointments\r View prescriptions and medical history\r Add family members\r Trigger emergency alerts\r Join video consultations\r 👨‍👩‍👧 Family Member\r Access patient data (with permission)\r View appointments and prescriptions\r Receive emergency alerts\r Track medicine reminders\r 👨‍⚕️ Doctor\r View and manage appointments\r Access patient medical history\r Add prescriptions\r Conduct video consultations\r Mark appointments as completed\r 🏥 Hospital\r Manage doctors (add/remove/view)\r Manage appointments (approve/reject/assign/reschedule)\r Handle emergency alerts\r Monitor system activity\r 🔑 Key Features\r 📅 Appointment Management\r Book and manage appointments\r Assign doctors\r Track appointment status\r 💊 Prescription System\r Doctors can create and send prescriptions\r Patients can view prescription history\r 🎥 Video Consultation\r Doctors and patients can connect remotely\r Enables treatment without visiting the hospital\r 🚨 Emergency Alert System\r One-click emergency button\r Sends alerts to:\r Family members\r Hospital\r Shares patient location for quick response\r 👨‍👩‍👧 Family Access System\r Patients can add multiple family members\r Family members get limited access\r Helps monitor elderly patients\r 🔐 Multi-User Login System\r Role-based login (Patient, Doctor, Hospital, Family)\r Secure authentication (Email/Password, OTP)\r Role-based dashboards\r 🔄 System Flow\r Patient registers and logs in\r Patient books an appointment\r Hospital approves and assigns a doctor\r Doctor views appointment and consults patient\r Doctor adds prescription\r Patient and family can view updates\r In emergencies, alerts are sent instantly\r 🔒 Security Features\r Role-Based Access Control (RBAC)\r OTP verification\r Secure authentication\r Data privacy restrictions\r 🧠 Tech Stack (Example)\r Frontend: HTML, CSS, JavaScript / React\r Backend: Node.js / Django\r Database: MongoDB / MySQL\r Authentication: Firebase / JWT\r Video Call: WebRTC / Zoom API\r 🚀 Future Enhancements\r AI-based health recommendations\r Wearable device integration\r Live ambulance tracking\r Multi-language support",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,13 +10,16 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
+    "@anthropic-ai/sdk": "^0.80.0",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
-    "groq-sdk": "^1.1.1",
+    "express-rate-limit": "^8.3.1",
+    "express-validator": "^7.3.1",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.1",
     "mysql2": "^3.20.0"
   }
 }

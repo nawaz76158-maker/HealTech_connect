@@ -16,9 +16,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/family', familyRoutes);
 
-app.get('/', (req, res) => {
-  res.send({ message: 'HealTech bac kend is working!' });
-});
+
 
 app.listen(3000, () => {
   console.log('HealTech server running on port 3000');

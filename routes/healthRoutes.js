@@ -1,41 +1,39 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
-const Groq = require('groq-sdk');
-require('dotenv').config();
-
-const groq = new Groq({ apikey: process.env.GROQ_API_KEY });
+const Anthropic = require('@anthropic-ai/sdk');
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 router.post('/symptoms', async (req, res) => {
-const { patient_id, symptoms } = req.body;  
-  try { 
-    const completion = await groq.chat.completions.create({
-   messages: [
-    { 
-      role: 'user',
-      content: `You are a helpful health assistant.
-      Patient symptoms: ${symptoms}.
-      Give simple clear health advice in 3 to 4 lines.
-      Always suggest consulting a doctor for serious symptoms.`
+    const { patient_id, symptoms } = req.body;
+    try {
+        // 1. Call Claude AI
+        const message = await client.messages.create({
+            model: "claude-3-5-sonnet-20240620",
+            max_tokens: 1024,
+            messages: [{ 
+                role: "user", 
+                content: `You are a helpful health assistant. Patient symptoms: ${symptoms}. Give simple clear advice in 3-4 lines.` 
+            }]
+        });
+
+        // 2. Get the response text
+        const ai_response = message.content[0].text;
+
+        // 3. Save to Database
+        db.query(
+            'INSERT INTO health_logs (patient_id, symptoms, ai_response) VALUES (?, ?, ?)',
+            [patient_id, symptoms, ai_response],
+            (err) => {
+                if (err) return res.status(500).json({ error: err.message });
+                res.json({ message: 'Symptoms logged', ai_response });
+            }
+        );
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "AI Assistant failed to respond." });
     }
-  ],
-  model: 'llama-3.3-70b-versatile'
-});
-
-const ai_response = completion.choices[0].message.content;
-
-db.query(
-'INSERT INTO health_logs (patient_id, symptoms, ai_response) VALUES (?, ?, ?)',
-[patient_id, symptoms, ai_response],
-(err) => {
-if (err) return res.status(500).json({ error: err.message });     
-res.json({ message: 'Symptoms logged', ai_response });
-}
-);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: err.message });
-  }
 });
 
 router.get('/logs/:patient_id', (req, res) => {
