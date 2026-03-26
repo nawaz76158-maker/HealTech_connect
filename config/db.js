@@ -3,7 +3,7 @@ const db =  mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '1173@mdnawaz',
-    database: 'rakshitha'
+    database: 'healtech_connect'
 });
 
 db.connect((err) => {
