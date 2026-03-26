@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HealthBridge — Doctor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f4ff; color: #1a1a2e; }
+
+    header {
+      background: #1565C0; color: white;
+      padding: 14px 24px; display: flex;
+      justify-content: space-between; align-items: center;
+    }
+    header h1 { font-size: 1.2rem; }
+    header span { font-size: 0.9rem; opacity: 0.85; }
+    .logout-btn {
+      background: rgba(255,255,255,0.2); border: none;
+      color: white; padding: 6px 14px; border-radius: 6px;
+      cursor: pointer; font-size: 0.85rem;
+    }
+
+    .container { max-width: 960px; margin: 24px auto; padding: 0 16px; }
+
+    .welcome-card {
+      background: linear-gradient(135deg, #1565C0, #42A5F5);
+      color: white; border-radius: 14px; padding: 24px;
+      margin-bottom: 24px;
+    }
+    .welcome-card h2 { font-size: 1.4rem; margin-bottom: 4px; }
+    .welcome-card p { opacity: 0.9; font-size: 0.9rem; }
+
+    .card {
+      background: white; border-radius: 14px;
+      padding: 20px; margin-bottom: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+    .card h3 { font-size: 1rem; margin-bottom: 16px; color: #1565C0; }
+
+    .search-row {
+      display: flex; gap: 10px; margin-bottom: 16px;
+    }
+    .search-row input {
+      flex: 1; padding: 10px 14px; border: 1.5px solid #ddd;
+      border-radius: 8px; font-size: 0.9rem;
+    }
+    .search-row button {
+      background: #1565C0; color: white;
+      border: none; padding: 10px 20px;
+      border-radius: 8px; cursor: pointer; font-size: 0.9rem;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th { background: #e8f0fe; padding: 10px 12px; text-align: left; color: #1565C0; }
+    td { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+    tr:hover td { background: #fafafa; }
+
+    .badge {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+    }
+    .badge-ok { background: #e8f5e9; color: #2e7d32; }
+    .badge-warn { background: #fff3e0; color: #e65100; }
+    .badge-critical { background: #fce4ec; color: #c62828; }
+
+    .note-form { margin-top: 20px; }
+    .note-form label { font-size: 0.85rem; color: #555; display: block; margin-bottom: 6px; }
+    .note-form select, .note-form textarea, .note-form input {
+      width: 100%; padding: 10px; border: 1.5px solid #ddd;
+      border-radius: 8px; font-size: 0.9rem; margin-bottom: 10px;
+      font-family: inherit;
+    }
+    .note-form textarea { height: 90px; resize: vertical; }
+    .note-form button {
+      background: #1565C0; color: white; border: none;
+      padding: 10px 24px; border-radius: 8px;
+      cursor: pointer; font-size: 0.9rem; font-weight: 600;
+    }
+    .success-msg {
+      background: #e8f5e9; color: #2e7d32;
+      padding: 10px 14px; border-radius: 8px;
+      font-size: 0.88rem; margin-top: 10px; display: none;
+    }
+    .empty { color: #999; font-size: 0.88rem; text-align: center; padding: 20px 0; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🏥 HealthBridge — Doctor Portal</h1>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <span id="doctorName">👨‍⚕️ Doctor</span>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Welcome -->
+  <div class="welcome-card">
+    <h2 id="welcomeText">Welcome, Doctor 👋</h2>
+    <p>View your patients' health logs and add prescriptions or advice.</p>
+  </div>
+
+  <!-- Search Patient -->
+  <div class="card">
+    <h3>🔍 Search Patient by ID</h3>
+    <div class="search-row">
+      <input type="number" id="patientIdInput" placeholder="Enter Patient ID..." />
+      <button onclick="loadPatientLogs()">Load Logs</button>
+    </div>
+
+    <div id="patientInfo" style="margin-bottom:12px; display:none;">
+      <strong id="patientNameDisplay"></strong>
+    </div>
+
+    <table id="logsTable" style="display:none;">
+      <thead>
+        <tr>
+          <th>📅 Date & Time</th>
+          <th>🩺 Symptoms</th>
+          <th>🤖 AI Advice</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="logsBody"></tbody>
+    </table>
+    <div class="empty" id="noLogs">Enter a patient ID above to view logs.</div>
+  </div>
+
+  <!-- Doctor Note / Prescription -->
+  <div class="card">
+    <h3>📝 Add Doctor Note / Prescription</h3>
+    <div class="note-form">
+      <label>Patient ID</label>
+      <input type="number" id="notePatientId" placeholder="Patient ID" />
+
+      <label>Prescription / Advice</label>
+      <textarea id="prescriptionText" placeholder="e.g. Take paracetamol 500mg twice daily for 3 days. Rest and drink fluids."></textarea>
+
+      <label>Severity</label>
+      <select id="severitySelect">
+        <option value="ok">✅ Mild — Home care sufficient</option>
+        <option value="warn">⚠️ Moderate — Monitor closely</option>
+        <option value="critical">🚨 Critical — Urgent hospital visit needed</option>
+      </select>
+
+      <button onclick="savePrescription()">💾 Save Note</button>
+      <div class="success-msg" id="saveSuccess">✅ Prescription saved! Patient and family can now see it.</div>
+    </div>
+  </div>
+
+  <!-- All Patients Overview -->
+  <div class="card">
+    <h3>👥 All Patients Overview</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Last Symptom</th>
+          <th>Last Seen</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="allPatientsBody">
+        <tr><td colspan="5" class="empty">Loading patients...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+  const API = 'http://localhost:3000';
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  // Redirect if not doctor
+  if (!token || user.role !== 'doctor') {
+    window.location.href = 'index.html';
+  }
+
+  document.getElementById('doctorName').textContent = '👨‍⚕️ ' + (user.name || 'Doctor');
+  document.getElementById('welcomeText').textContent = `Welcome, Dr. ${user.name || 'Doctor'} 👋`;
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+
+  // Load patient logs by ID
+  async function loadPatientLogs() {
+    const patientId = document.getElementById('patientIdInput').value;
+    if (!patientId) return alert('Please enter a patient ID.');
+
+    document.getElementById('notePatientId').value = patientId;
+
+    try {
+      const res = await fetch(`${API}/api/doctor/patient/${patientId}/logs`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+
+      if (!res.ok) return alert(data.error || 'Failed to load logs.');
+
+      const tbody = document.getElementById('logsBody');
+      tbody.innerHTML = '';
+
+      if (!data.logs || data.logs.length === 0) {
+        document.getElementById('logsTable').style.display = 'none';
+        document.getElementById('noLogs').textContent = 'No logs found for this patient.';
+        document.getElementById('noLogs').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('patientNameDisplay').textContent =
+        `Patient: ${data.patientName || 'ID ' + patientId}`;
+      document.getElementById('patientInfo').style.display = 'block';
+
+      data.logs.forEach(log => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${new Date(log.created_at).toLocaleString()}</td>
+          <td>${log.symptoms}</td>
+          <td style="font-size:0.82rem;color:#555;">${log.ai_advice}</td>
+          <td><span class="badge badge-ok">Logged</span></td>
+        `;
+        tbody.appendChild(row);
+      });
+
+      document.getElementById('logsTable').style.display = 'table';
+      document.getElementById('noLogs').style.display = 'none';
+
+    } catch (err) {
+      alert('Error connecting to server.');
+    }
+  }
+
+  // Save prescription
+  async function savePrescription() {
+    const patientId = document.getElementById('notePatientId').value;
+    const prescription = document.getElementById('prescriptionText').value;
+    const severity = document.getElementById('severitySelect').value;
+
+    if (!patientId || !prescription) return alert('Fill in patient ID and prescription.');
+
+    try {
+      const res = await fetch(`${API}/api/doctor/prescription`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ patientId, prescription, severity })
+      });
+      const data = await res.json();
+      if (!res.ok) return alert(data.error || 'Failed to save.');
+
+      document.getElementById('saveSuccess').style.display = 'block';
+      document.getElementById('prescriptionText').value = '';
+      setTimeout(() => document.getElementById('saveSuccess').style.display = 'none', 3000);
+    } catch (err) {
+      alert('Error saving prescription.');
+    }
+  }
+
+  // Load all patients
+  async function loadAllPatients() {
+    try {
+      const res = await fetch(`${API}/api/doctor/patients`, {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+      const tbody = document.getElementById('allPatientsBody');
+
+      if (!data.patients || data.patients.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty">No patients found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = '';
+      data.patients.forEach(p => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${p.id}</td>
+          <td>${p.name}</td>
+          <td style="font-size:0.82rem;">${p.last_symptom || '—'}</td>
+          <td style="font-size:0.82rem;">${p.last_seen ? new Date(p.last_seen).toLocaleDateString() : '—'}</td>
+          <td><span class="badge badge-ok">Active</span></td>
+        `;
+        tbody.appendChild(row);
+      });
+    } catch (err) {
+      console.log('Could not load patients list.');
+    }
+  }
+
+  loadAllPatients();
+</script>
+</body>
+</html>
