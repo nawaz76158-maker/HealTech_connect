@@ -16,8 +16,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/family', familyRoutes);
 
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'HealTech backend is working!' });
+app.get('/', (req, res) => {
+  res.send({ message: 'HealTech bac kend is working!' });
 });
 
 app.listen(3000, () => {
