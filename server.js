@@ -17,9 +17,9 @@ app.use('/api/health', healthRoutes);
 app.use('/api/family', familyRoutes);
 
 app.get('/api/test', (req, res) => {
-  res.json({ message: 'Backend is working!' });
+  res.json({ message: 'HealTech backend is working!' });
 });
 
 app.listen(3000, () => {
-  console.log('Server running on port 3000');
+  console.log('HealTech server running on port 3000');
 });
